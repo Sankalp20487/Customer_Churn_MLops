@@ -18,7 +18,7 @@ shap
 # Experiment tracking & MLOps
 mlflow==2.16.2
 sagemaker-mlflow==0.1.0
-
+sagemaker
 # Visualization
 matplotlib
 seaborn
