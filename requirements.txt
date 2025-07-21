@@ -1,0 +1,33 @@
+# Core Libraries
+pandas
+numpy
+boto3
+joblib
+
+# Data I/O
+pyarrow
+fsspec
+s3fs
+
+# Machine Learning
+scikit-learn==1.3.2
+xgboost
+lightgbm
+shap
+
+# Experiment tracking & MLOps
+mlflow==2.16.2
+sagemaker-mlflow==0.1.0
+
+# Visualization
+matplotlib
+seaborn
+
+# Environment Management
+python-dotenv
+
+# UI
+streamlit
+
+# Testing
+pytest

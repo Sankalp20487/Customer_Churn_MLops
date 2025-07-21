@@ -1,0 +1,11 @@
+pyarrow
+fsspec
+s3fs
+seaborn
+# Experiment tracking
+mlflow==2.16.2
+sagemaker-mlflow==0.1.0
+
+shap
+
+
