@@ -1,0 +1,74 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-2
+      GLUE_JOB_NAME: churn-etl-job
+      TRAINING_ROLE_ARN: arn:aws:iam::650251710898:role/service-role/AmazonSageMaker-ExecutionRole-20250531T192001
+      BUCKET_NAME: customer-churn-project-data
+      MLFLOW_TRACKING_URI: arn:aws:sagemaker:us-east-2:650251710898:mlflow-tracking-server/mlflow-ui
+      MLFLOW_EXPERIMENT_NAME: ChurnModelTracking
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r modeling/requirements.txt
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region:            us-east-2
+
+    - name: Start AWS Glue ETL job
+      id: glue
+      run: |
+        JOB_RUN_ID=$(aws glue start-job-run \
+          --job-name $GLUE_JOB_NAME \
+          --arguments '{
+            "--JOB_NAME":"'"$GLUE_JOB_NAME"'",
+            "--S3_BUCKET_NAME":"'"$BUCKET_NAME"'",
+            "--TRAIN_INPUT_KEY":"raw/train.csv",
+            "--TEST_INPUT_KEY":"raw/test.csv",
+            "--TRAIN_OUTPUT_PREFIX":"processed/train_cleaned/",
+            "--TEST_OUTPUT_PREFIX":"processed/test_cleaned/"
+          }' \
+          --query JobRunId --output text)
+        echo "job_run_id=$JOB_RUN_ID" >> $GITHUB_OUTPUT
+
+    - name: Wait for Glue job to succeed
+      run: |
+        aws glue get-job-run \
+          --job-name $GLUE_JOB_NAME \
+          --run-id ${{ steps.glue.outputs.job_run_id }} \
+          --query 'JobRun.JobRunState' \
+          --output text \
+          --watch
+
+    - name: Run SageMaker training
+      run: |
+        python scripts/run_training_job.py
+
+    - name: Save best model to S3
+      run: |
+        python scripts/save_model.py
+
+    - name:  All done!
+      run: echo "ETL, training, and model save completed successfully."
