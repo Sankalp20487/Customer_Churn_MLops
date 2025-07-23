@@ -12,7 +12,7 @@ from sagemaker.sklearn.estimator import SKLearn
 load_dotenv()  # make sure you have a .env file at your repo root
 
 bucket_name = os.environ["S3_BUCKET_NAME"]
-role_arn    = os.environ["MLFLOW_TRACKING_URI"]
+role_arn    = os.environ["TRAINING_ROLE_ARN"]
 
 # ─────────────────────────────────────────────
 # ✅ Build the “dummy” channel & job name
