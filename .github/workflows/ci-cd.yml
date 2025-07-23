@@ -44,7 +44,7 @@ jobs:
             --job-name $GLUE_JOB_NAME \
             --arguments '{
               "--JOB_NAME":"'"$GLUE_JOB_NAME"'",
-              "--S3_BUCKET_NAME":"'"$BUCKET_NAME"'",
+              "--S3_BUCKET_NAME":"'"$S3_BUCKET_NAME"'",
               "--TRAIN_INPUT_KEY":"raw/train.csv",
               "--TEST_INPUT_KEY":"raw/test.csv",
               "--TRAIN_OUTPUT_PREFIX":"processed/train_cleaned/",
