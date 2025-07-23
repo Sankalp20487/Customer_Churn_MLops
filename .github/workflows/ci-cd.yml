@@ -14,6 +14,9 @@ jobs:
       S3_BUCKET_NAME: customer-churn-project-data
       MLFLOW_TRACKING_URI: arn:aws:sagemaker:us-east-2:650251710898:mlflow-tracking-server/mlflow-ui
       MLFLOW_EXPERIMENT_NAME: ChurnModelTracking
+      TRAIN_PARQUET_PATH: s3://customer-churn-project-data/processed/train_cleaned/
+      TEST_PARQUET_PATH:  s3://customer-churn-project-data/processed/test_cleaned/
+      MONITORING_LOGS_DIR: monitoring_logs
 
     steps:
       - name: Check out repo
