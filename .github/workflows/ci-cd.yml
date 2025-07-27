@@ -17,6 +17,7 @@ jobs:
       TRAIN_PARQUET_PATH: s3://customer-churn-project-data/processed/train_cleaned/
       TEST_PARQUET_PATH:  s3://customer-churn-project-data/processed/test_cleaned/
       MONITORING_LOGS_DIR: monitoring_logs
+      FINAL_MODEL_PATH: models/Best_model.pkl
 
     steps:
       - name: Check out repo
