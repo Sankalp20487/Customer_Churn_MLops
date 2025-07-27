@@ -23,7 +23,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from contextlib import nullcontext
 from xgboost import XGBClassifier
-from lightgbm import LGBMClassifier
+
 
 warnings.filterwarnings("ignore")
 
@@ -102,10 +102,6 @@ models = {
     },
     "XGBoost": {
         "estimator": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
-        "params": {"classifier__learning_rate": [0.05, 0.1], "classifier__n_estimators": [100, 200]}
-    },
-    "LightGBM": {
-        "estimator": LGBMClassifier(),
         "params": {"classifier__learning_rate": [0.05, 0.1], "classifier__n_estimators": [100, 200]}
     },
     "NaiveBayes": {

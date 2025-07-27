@@ -8,5 +8,5 @@ sagemaker-mlflow==0.1.0
 
 shap
 xgboost
-lightgbm
+
 
