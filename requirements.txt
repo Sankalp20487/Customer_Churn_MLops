@@ -10,7 +10,7 @@ fsspec
 s3fs
 
 # Machine Learning
-scikit-learn==1.0.1
+scikit-learn==1.0.2
 xgboost
 lightgbm
 shap
