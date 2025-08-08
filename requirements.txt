@@ -1,8 +1,8 @@
 # Core Libraries
-pandas
-numpy
-boto3
-joblib
+#pandas
+#numpy
+#boto3
+#joblib
 
 # Data I/O
 pyarrow
@@ -11,7 +11,7 @@ s3fs
 
 # Machine Learning
 xgboost
-lightgbm
+#lightgbm
 shap
 
 # Experiment tracking & MLOps
