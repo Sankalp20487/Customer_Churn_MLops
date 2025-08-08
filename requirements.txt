@@ -1,6 +1,5 @@
 # Keep compatibility with SageMaker SKLearn 1.2-1 (Python 3.9)
 # DO NOT let pip upgrade core libs
-pandas==1.1.3            # keep the container's version
 # (intentionally NOT listing numpy; use the container's)
 
 # I/O
