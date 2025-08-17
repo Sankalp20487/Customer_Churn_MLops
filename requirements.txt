@@ -1,21 +1,6 @@
-# Core Libraries
-#pandas
-#numpy
-#boto3
-#joblib
-
-# Data I/O
-pyarrow
-fsspec
-s3fs
-
-# Machine Learning
-xgboost
-#lightgbm
-#shap
 
 # Experiment tracking & MLOps
-mlflow==2.3.2
+mlflow==2.16.2
 sagemaker-mlflow==0.1.0
 sagemaker
 
