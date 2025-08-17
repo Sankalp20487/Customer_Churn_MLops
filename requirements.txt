@@ -14,5 +14,6 @@ xgboost==1.7.6           # lighter CPU build; avoids NCCL pulls
 # MLflow (needed for the ARN tracking URI)
 mlflow==2.16.2 
 sagemaker-mlflow==0.1.0
+sagemaker
 
 python-dotenv
