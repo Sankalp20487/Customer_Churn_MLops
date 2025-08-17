@@ -2,7 +2,7 @@
 # DO NOT let pip upgrade core libs
 # (intentionally NOT listing numpy; use the container's)
 
-# I/O
+# I/O 
 fsspec
 s3fs
 
@@ -12,7 +12,7 @@ xgboost==1.7.6           # lighter CPU build; avoids NCCL pulls
 # shap  <-- remove for now (pulls heavy numba/llvmlite)
 
 # MLflow (needed for the ARN tracking URI)
-mlflow==2.16.2
+mlflow==2.16.2 
 sagemaker-mlflow==0.1.0
 
 python-dotenv
