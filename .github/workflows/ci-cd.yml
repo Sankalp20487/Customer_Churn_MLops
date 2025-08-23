@@ -1,21 +1,20 @@
-name: CI/CD Pipeline
+name: Debug Training Pipeline
   
 on: 
   push:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  debug-training:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-2
-      GLUE_JOB_NAME: churn-etl-job
       TRAINING_ROLE_ARN: arn:aws:iam::650251710898:role/service-role/AmazonSageMaker-ExecutionRole-20250531T192001
       S3_BUCKET_NAME: customer-churn-project-data
       MLFLOW_TRACKING_URI: arn:aws:sagemaker:us-east-2:650251710898:mlflow-tracking-server/mlflow-ui
       MLFLOW_EXPERIMENT_NAME: ChurnModelTracking
       TRAIN_PARQUET_PATH: s3://customer-churn-project-data/processed/train_cleaned/
-      TEST_PARQUET_PATH:  s3://customer-churn-project-data/processed/test_cleaned/
+      TEST_PARQUET_PATH: s3://customer-churn-project-data/processed/test_cleaned/
       MONITORING_LOGS_DIR: monitoring_logs
       FINAL_MODEL_PATH: models/Best_model.pkl
 
@@ -37,66 +36,17 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            ${{ env.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Start AWS Glue ETL job
-        id: start_glue
-        run: |
-          JOB_RUN_ID=$(aws glue start-job-run \
-            --job-name $GLUE_JOB_NAME \
-            --arguments '{
-              "--JOB_NAME":"'"$GLUE_JOB_NAME"'",
-              "--S3_BUCKET_NAME":"'"$S3_BUCKET_NAME"'",
-              "--TRAIN_INPUT_KEY":"raw/train.csv",
-              "--TEST_INPUT_KEY":"raw/test.csv",
-              "--TRAIN_OUTPUT_PREFIX":"processed/train_cleaned/",
-              "--TEST_OUTPUT_PREFIX":"processed/test_cleaned/"
-            }' \
-            --query JobRunId \
-            --output text)
-          echo "job_run_id=$JOB_RUN_ID" >> $GITHUB_OUTPUT
-
-      - name: Wait for Glue job to complete
-        run: |
-          JOB_RUN_ID=${{ steps.start_glue.outputs.job_run_id }}
-          echo "⏳ Waiting for Glue job $JOB_RUN_ID to finish…"
-          timeout=$((5*60))      # 5 minutes
-          interval=30            # poll every 30 seconds
-          elapsed=0
-          while [ $elapsed -lt $timeout ]; do
-            STATUS=$(aws glue get-job-run \
-              --job-name $GLUE_JOB_NAME \
-              --run-id "$JOB_RUN_ID" \
-              --query 'JobRun.JobRunState' \
-              --output text)
-            echo "  → status = $STATUS"
-            case "$STATUS" in
-              SUCCEEDED)
-                echo "✅ Glue ETL succeeded."
-                exit 0
-                ;;
-              FAILED|STOPPED)
-                echo "❌ Glue ETL failed with status $STATUS."
-                exit 1
-                ;;
-              *)
-                sleep $interval
-                elapsed=$((elapsed + interval))
-                ;;
-            esac
-          done
-          echo "❌ Glue ETL did not complete within 5 minutes."
-          exit 1
+      # SKIP GLUE STEPS - using existing processed data
 
       - name: Run SageMaker training
-        run: |
-          python scripts/run_training_job.py
+        run: python scripts/run_training_job.py
 
       - name: Save best model to S3
-        run: |
-          python scripts/save_model.py
+        run: python scripts/save_model.py
 
-      - name: All done!
-        run: echo "🎉 ETL, training, and model save completed successfully."
+      - name: Training complete!
+        run: echo "🎉 Training and model save completed successfully."
