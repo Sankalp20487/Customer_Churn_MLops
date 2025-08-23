@@ -1,22 +1,28 @@
 # model_loader.py
 
 import os
-import boto3
-import joblib
-import tempfile
+import mlflow
+import mlflow.sklearn
 
 def load_model():
-    # ── Read config from ENV ────────────────────────────────
-    bucket = os.environ["S3_BUCKET_NAME"]
-    key    = os.environ["FINAL_MODEL_PATH"]  # e.g. "models/Best_model.pkl"
+    """Load the best churn prediction model for Streamlit app"""
     
-    # ── Download artifact from S3 ───────────────────────────
-    s3 = boto3.client("s3")
-    with tempfile.NamedTemporaryFile(suffix=".pkl", delete=False) as tmp:
-        s3.download_fileobj(bucket, key, tmp)
-        tmp_path = tmp.name
-
-    # ── Load & cleanup ───────────────────────────────────────
-    model = joblib.load(tmp_path)
-    os.remove(tmp_path)
+    # Connect to MLflow
+    tracking_uri = os.environ["MLFLOW_TRACKING_URI"]
+    experiment_name = os.environ["MLFLOW_EXPERIMENT_NAME"]
+    mlflow.set_tracking_uri(tracking_uri)
+    
+    # Get the best model by recall
+    exp = mlflow.get_experiment_by_name(experiment_name)
+    runs = mlflow.search_runs(
+        experiment_ids=[exp.experiment_id],
+        order_by=["metrics.recall DESC"],
+        max_results=1
+    )
+    
+    # Load and return the model
+    best_run = runs.iloc[0]
+    model_uri = f"runs:/{best_run['run_id']}/{best_run['params.model']}"
+    model = mlflow.sklearn.load_model(model_uri)
+    
     return model
