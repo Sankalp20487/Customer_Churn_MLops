@@ -220,7 +220,8 @@ for model_name, config in models.items():
             "fn":              fn,
             "actual_ratio":    y_test.sum() / len(y_test),
             "predicted_ratio": preds.sum() / len(preds),
-            "sample_size":     len(y_test)
+            "test_sample_size":     len(y_test),
+            "train_sample_size":     len(y_train)
         }])
         buf = BytesIO()
         monitor_df.to_parquet(buf, index=False)
