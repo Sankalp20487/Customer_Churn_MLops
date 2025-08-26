@@ -81,31 +81,31 @@ X_test,  y_test  = test_df[features],  test_df["churn"]
 # ─────────────────────────────────────────────
 models = {
     "LogisticRegression": {
-        "estimator": LogisticRegression(),
+        "estimator": LogisticRegression(class_weight='balanced'),
         "params":    {"classifier__C": [0.1, 1, 10]}
     },
     "RandomForest": {
-        "estimator": RandomForestClassifier(),
+        "estimator": RandomForestClassifier(class_weight='balanced'),
         "params": {"classifier__n_estimators": [100, 200], "classifier__max_depth": [5, 10]}
     },
     "GradientBoosting": {
-        "estimator": GradientBoostingClassifier(),
+        "estimator": GradientBoostingClassifier(),  # No class_weight parameter
         "params": {"classifier__learning_rate": [0.05, 0.1], "classifier__n_estimators": [100, 200]}
     },
     "AdaBoost": {
-        "estimator": AdaBoostClassifier(),
+        "estimator": AdaBoostClassifier(),  # No class_weight parameter
         "params": {"classifier__n_estimators": [50, 100]}
     },
     "DecisionTree": {
-        "estimator": DecisionTreeClassifier(),
+        "estimator": DecisionTreeClassifier(class_weight='balanced'),
         "params": {"classifier__max_depth": [5, 10, None]}
     },
     "XGBoost": {
-        "estimator": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
+        "estimator": XGBClassifier(use_label_encoder=False, eval_metric='logloss', scale_pos_weight=1.13),  # XGBoost uses scale_pos_weight
         "params": {"classifier__learning_rate": [0.05, 0.1], "classifier__n_estimators": [100, 200]}
     },
     "NaiveBayes": {
-        "estimator": GaussianNB(),
+        "estimator": GaussianNB(),  # No class_weight parameter
         "params": {}
     }
 }
@@ -127,7 +127,7 @@ for model_name, config in models.items():
             ("scaler",     StandardScaler()),
             ("classifier", config["estimator"])
         ])
-        clf = GridSearchCV(pipe, config["params"], cv=3, scoring="accuracy")
+        clf = GridSearchCV(pipe, config["params"], cv=3, scoring="f1")
         clf.fit(X_train, y_train)
 
         # 2) predict & score
