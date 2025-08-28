@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-2
-      GLUE_JOB_NAME: churn-etl-job
+      GLUE_JOB_NAME: churn-etl-job-v2
       TRAINING_ROLE_ARN: arn:aws:iam::650251710898:role/service-role/AmazonSageMaker-ExecutionRole-20250531T192001
       S3_BUCKET_NAME: customer-churn-project-data
       MLFLOW_TRACKING_URI: arn:aws:sagemaker:us-east-2:650251710898:mlflow-tracking-server/mlflow-ui

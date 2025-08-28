@@ -63,8 +63,10 @@ s3 = boto3.client("s3")
 
 features = [
     'age', 'tenure', 'usage_frequency', 'support_calls', 'payment_delay',
-    'total_spend', 'gender_index', 'last_interaction',
-    'subscription_type_index', 'contract_length_index'
+    'total_spend', 'last_interaction',
+    'gender_0', 'gender_1',  # Binary columns for gender
+    'subscription_type_0', 'subscription_type_1', 'subscription_type_2',  # Binary for subscription
+    'contract_length_0', 'contract_length_1', 'contract_length_2'  # Binary for contract
 ]
 
 # ─────────────────────────────────────────────
