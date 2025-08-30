@@ -28,14 +28,14 @@ from xgboost import XGBClassifier
 warnings.filterwarnings("ignore")
 
 # ────────────────────────────────────────────────────────────────────────────────
-# 👉 Make sure the intermediate output dir exists (so plt.savefig never crashes)
+# Make sure the intermediate output dir exists (so plt.savefig never crashes)
 # ────────────────────────────────────────────────────────────────────────────────
 INTERMEDIATE_DIR = os.environ.get("SM_OUTPUT_INTERMEDIATE_DIR", "/opt/ml/output/intermediate")
 os.makedirs(INTERMEDIATE_DIR, exist_ok=True)
 
 
 # ─────────────────────────────────────────────
-# ✅ Load ENV Vars (from SageMaker env, not .env)
+# Load ENV Vars (from SageMaker env)
 # ─────────────────────────────────────────────
 mlflow_tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
 mlflow_experiment  = os.environ.get("MLFLOW_EXPERIMENT_NAME")
@@ -64,13 +64,13 @@ s3 = boto3.client("s3")
 features = [
     'age', 'tenure', 'usage_frequency', 'support_calls', 'payment_delay',
     'total_spend', 'last_interaction',
-    'gender_0', 'gender_1',  # Binary columns for gender
-    'subscription_type_0', 'subscription_type_1', 'subscription_type_2',  # Binary for subscription
-    'contract_length_0', 'contract_length_1', 'contract_length_2'  # Binary for contract
+    'gender_female', 'gender_male',
+    'subscription_type_basic', 'subscription_type_standard', 'subscription_type_premium',
+    'contract_length_monthly', 'contract_length_quarterly', 'contract_length_annual'
 ]
 
 # ─────────────────────────────────────────────
-# ✅ Load Data from S3
+# Load Data from S3
 # ─────────────────────────────────────────────
 train_df = pd.read_parquet(train_path)
 test_df  = pd.read_parquet(test_path)
@@ -79,7 +79,7 @@ X_train, y_train = train_df[features], train_df["churn"]
 X_test,  y_test  = test_df[features],  test_df["churn"]
 
 # ─────────────────────────────────────────────
-# ✅ Model Config
+# Model Config
 # ─────────────────────────────────────────────
 models = {
     "LogisticRegression": {
@@ -91,11 +91,11 @@ models = {
         "params": {"classifier__n_estimators": [100, 200], "classifier__max_depth": [5, 10]}
     },
     "GradientBoosting": {
-        "estimator": GradientBoostingClassifier(),  # No class_weight parameter
+        "estimator": GradientBoostingClassifier(),  
         "params": {"classifier__learning_rate": [0.05, 0.1], "classifier__n_estimators": [100, 200]}
     },
     "AdaBoost": {
-        "estimator": AdaBoostClassifier(),  # No class_weight parameter
+        "estimator": AdaBoostClassifier(),  
         "params": {"classifier__n_estimators": [50, 100]}
     },
     "DecisionTree": {
@@ -107,7 +107,7 @@ models = {
         "params": {"classifier__learning_rate": [0.05, 0.1], "classifier__n_estimators": [100, 200]}
     },
     "NaiveBayes": {
-        "estimator": GaussianNB(),  # No class_weight parameter
+        "estimator": GaussianNB(),  
         "params": {}
     }
 }
@@ -115,10 +115,10 @@ models = {
 leaderboard = []
 
 # ─────────────────────────────────────────────
-# ✅ Training Loop
+# Training Loop
 # ─────────────────────────────────────────────
 for model_name, config in models.items():
-    print(f"\n▶️  Training {model_name}")
+    print(f"\n Training {model_name}")
 
     run_mlflow = bool(mlflow_tracking_uri and mlflow_experiment)
     ctx = mlflow.start_run(run_name=model_name) if run_mlflow else nullcontext()
@@ -141,7 +141,7 @@ for model_name, config in models.items():
         rec  = recall_score(y_test, preds)
         f1   = f1_score(y_test, preds)
 
-        print(f"✔️  {model_name} — Acc: {acc:.4f}, Prec: {prec:.4f}, Rec: {rec:.4f}, F1: {f1:.4f}")
+        print(f" {model_name} — Acc: {acc:.4f}, Prec: {prec:.4f}, Rec: {rec:.4f}, F1: {f1:.4f}")
 
         # 3) log params & metrics
         if run_mlflow:
@@ -157,7 +157,7 @@ for model_name, config in models.items():
             sig = infer_signature(X_train, clf.predict(X_train))
             mlflow.sklearn.log_model(
                 clf.best_estimator_,
-                artifact_path=model_name,        # still writes the pickle artifact
+                artifact_path=model_name,        
                 signature=sig,
                 input_example=X_train.iloc[:5]
                 # <- NOTE no `registered_model_name=` argument, so registry is never invoked
@@ -191,7 +191,7 @@ for model_name, config in models.items():
         if run_mlflow:
             mlflow.log_artifact(roc_path)
 
-        # 6) feature importances (if available)
+        # 6) feature importances
         try:
             importances = clf.best_estimator_.named_steps["classifier"].feature_importances_
             fi_fig, fi_ax = plt.subplots()
@@ -239,7 +239,7 @@ for model_name, config in models.items():
         })
 
 # ─────────────────────────────────────────────
-# ✅ Show leaderboard
+# Show leaderboard
 # ─────────────────────────────────────────────
 results_df = pd.DataFrame(leaderboard).sort_values(by="F1 Score", ascending=False)
 print(results_df)
