@@ -24,7 +24,8 @@ The goal of this project is to move beyond model development and focus on the **
 
 ## ⚙️ Architecture
 <p align="center">
-  <img src="architecture.png" alt="MLOps Architecture" width="800"/>
+  <img width="834" height="470" alt="image" src="https://github.com/user-attachments/assets/73478fd6-c921-4d61-8605-6338b190220a" />
+
 </p>
 
 _The architecture diagram above shows the end-to-end flow from raw data ingestion to monitoring and deployment-ready endpoints._  
@@ -86,5 +87,6 @@ To run locally:
 
 ## 📌 Key Takeaway
 This project highlights the importance of infrastructure in ML — going beyond training models to building the automation, monitoring, and governance that keep ML systems reliable in production.
+
 
 
