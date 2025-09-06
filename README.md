@@ -67,22 +67,9 @@ Real-time model monitoring via Grafana:
 
 ## 📂 Repository Structure
 
-Customer_Churn_MLops/
-│
-├── data/                     # Sample data (if provided)
-├── glue/                     # AWS Glue ETL scripts
-├── modeling/
-│   ├── train.py              # Training script for SageMaker
-│   ├── requirements.txt      # Python dependencies for training
-│   └── save_model.py         # Save best model to S3
-├── scripts/
-│   ├── run_training_job.py   # Trigger SageMaker training from CI
-│   └── deploy_serverless.py  # (Optional) Deploy to SageMaker Serverless
-├── streamlit_app/            # Streamlit demo app
-├── .github/workflows/        # GitHub Actions CI/CD workflows
-└── README.md                 # Project documentation
+<img width="597" height="321" alt="image" src="https://github.com/user-attachments/assets/001cdae5-1864-4f84-ac36-b7db2f768354" />
 
-## 🖥️ Streamlit Frontend (Optional)
+## 🖥️ Streamlit Frontend
 A lightweight Streamlit app is included to demonstrate interactive predictions.
 
 To run locally:
@@ -104,3 +91,4 @@ Grafana Monitoring Dashboard: View Here
 
 📌 Key Takeaway
 This project highlights the importance of infrastructure in ML — going beyond training models to building the automation, monitoring, and governance that keep ML systems reliable in production.
+
