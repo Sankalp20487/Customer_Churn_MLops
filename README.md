@@ -84,11 +84,7 @@ To run locally:
 3.Add SHAP explainability for churn predictions
 4.Integrate a feature store for managing engineered features
 
-## 📬 Resources
-GitHub Repository: Customer_Churn_MLops
-
-Grafana Monitoring Dashboard: View Here
-
-📌 Key Takeaway
+## 📌 Key Takeaway
 This project highlights the importance of infrastructure in ML — going beyond training models to building the automation, monitoring, and governance that keep ML systems reliable in production.
+
 
